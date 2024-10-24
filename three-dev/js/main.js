@@ -5,7 +5,7 @@ import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 
-let container, camera, scene, renderer;
+let camera, scene, renderer;
 let cube, sphere, cone, water;
 
 init();
@@ -20,20 +20,19 @@ function init() {
 	renderer.setAnimationLoop( animate );
 	document.body.appendChild( renderer.domElement );
 
-	const axesHelper = new THREE.AxesHelper(20); // 5 units in length
+	// Add Axis Helper
+	const axesHelper = new THREE.AxesHelper(20);
 	scene.add(axesHelper);
 
-	// island
 	const islandGeometry = new THREE.CylinderGeometry( 5, 10, 2, 32 );
 	const islandMaterial = new THREE.MeshStandardMaterial({
-		color: 0xC2B280, // Sand color (beige)
+		color: 0xC2B280,
 		roughness: 1,
 	});
 	const island = new THREE.Mesh( islandGeometry, islandMaterial );
-	island.position.set(0, -0.5, 0); // Slightly below water level for realism
+	island.position.set(0, -0.5, 0);
 	scene.add( island );
 
-	// rocks
 	const rockGeometry = new THREE.DodecahedronGeometry( 0.5 );
 	const rockMaterial = new THREE.MeshStandardMaterial({
 		color: 0x808080,
@@ -41,20 +40,18 @@ function init() {
 	});
 	for (let i = 0; i < 5; i++) {
 		const rock = new THREE.Mesh( rockGeometry, rockMaterial );
-		rock.position.set( Math.random() * 20 - 10, 0, Math.random() * 20 - 10 ); // Spread out the rocks around the island
+		rock.position.set( Math.random() * 20 - 10, 0, Math.random() * 20 - 10 );
 		scene.add( rock );
 	}
 
-	// load palm
 	const loader = new GLTFLoader();
-	loader.load('/scene.gltf', function(gltf) {
+	loader.load('./scene.gltf', function(gltf) {
     const palmTree = gltf.scene;
     palmTree.position.set(-1, 4, 0);
     palmTree.scale.set(5, 5, 5);
     scene.add(palmTree);
   });
 
-	l
 	const rockLikeMaterial = new THREE.MeshStandardMaterial({
 		color: 0x696969,
 		roughness: 1,
@@ -85,7 +82,6 @@ function init() {
 	cone.position.set(0, 2.5, 0);
 	coneWireframe.position.set(0, 2.5, 0);
 
-	// Add solid and wireframe versions
 	scene.add( cube );
 	scene.add( cubeWireframe );
 	scene.add( sphere );
@@ -93,7 +89,6 @@ function init() {
 	scene.add( cone );
 	scene.add( coneWireframe );
 
-	// water
 	const waterGeometry = new THREE.PlaneGeometry( 10000, 10000 );
 	water = new Water(
 		waterGeometry,
@@ -114,31 +109,28 @@ function init() {
 	water.rotation.x = - Math.PI / 2;
 	scene.add( water );
 
-	// sky
 	const sky = new Sky();
 	sky.scale.setScalar(10000);
 	scene.add(sky);
 
 	const sun = new THREE.Vector3();
 
-	// Adjust sky properties
 	const skyUniforms = sky.material.uniforms;
-	skyUniforms['turbidity'].value = 10;  // more brightness
-	skyUniforms['rayleigh'].value = 2; // Increase scattering for brighter look
+	skyUniforms['turbidity'].value = 10;
+	skyUniforms['rayleigh'].value = 2;
 	skyUniforms['mieCoefficient'].value = 0.005;
 	skyUniforms['mieDirectionalG'].value = 0.7;
 
-	// Set sun position for proper lighting
-	const phi = THREE.MathUtils.degToRad(90 - 2); // Higher sun for more light
+	const phi = THREE.MathUtils.degToRad(90 - 2);
 	const theta = THREE.MathUtils.degToRad(180);
 	sun.setFromSphericalCoords(1, phi, theta);
 	sky.material.uniforms['sunPosition'].value.copy(sun);
 
-	// Add lights
-	const ambientLight = new THREE.AmbientLight( 0x888888 ); // Brighter ambient light
+	// lights
+	const ambientLight = new THREE.AmbientLight( 0x888888 );
 	scene.add( ambientLight );
 
-	const pointLight = new THREE.PointLight( 0xffffff, 2, 100 ); // Bright white light for better illumination
+	const pointLight = new THREE.PointLight( 0xffffff, 2, 100 );
 	pointLight.position.set( 5, 5, 5 );
 	scene.add( pointLight );
 
@@ -146,6 +138,7 @@ function init() {
 	const controls = new OrbitControls( camera, renderer.domElement );
 	controls.update();
 
+	// background color
 	scene.background = new THREE.Color(0x87CEEB);
 
 	camera.position.set( 15, 10, 15 );
@@ -153,6 +146,7 @@ function init() {
 }
 
 function animate() {
+	// Animate water
 	water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
 
 	renderer.render( scene, camera );
