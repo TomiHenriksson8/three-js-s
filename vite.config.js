@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   root: "three-dev",
-  publicDir: "textures",
+  publicDir: false,
   build: {
     outDir: "../dist",
     assetsDir: "assets",
@@ -12,5 +13,13 @@ export default defineConfig({
       },
     },
   },
-  assetsInclude: ['**/*.gltf', '**/*.bin'],
+  plugins: [
+    viteStaticCopy({
+      targets: [
+        { src: "models/*", dest: "assets/models" },
+        { src: "textures/*", dest: "assets/textures" },
+      ],
+    }),
+  ],
+  assetsInclude: ['**/*.glb', '**/*.png'],
 });
