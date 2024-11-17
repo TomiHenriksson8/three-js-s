@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { VRButton } from 'three/addons/webxr/VRButton.js'; // Import VRButton
 import { loadModels } from './models.js';
 import { setupEnvironment } from './environment.js';
 
@@ -13,12 +14,16 @@ function init() {
     scene = new THREE.Scene();
 
     // Initialize the camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000); // Reduced FOV for a wider view
 
     // Initialize the renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true; // Enable VR
     document.body.appendChild(renderer.domElement);
+
+    // Add the VR button to enter VR mode
+    document.body.appendChild(VRButton.createButton(renderer));
 
     // Enable shadow map for renderer
     renderer.shadowMap.enabled = true;
@@ -39,13 +44,14 @@ function init() {
     controls.update();
 
     // Set camera position and orientation
-    camera.position.set(25, 10, 15);
+    camera.position.set(50, 30, 40); // Zoomed out further
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 }
 
 function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    renderer.setAnimationLoop(() => {
+        renderer.render(scene, camera); // WebXR-compatible render loop
+    });
 }
 
 // Handle window resize
