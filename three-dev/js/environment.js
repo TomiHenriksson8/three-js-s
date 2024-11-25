@@ -11,26 +11,26 @@ export function setupEnvironment(scene, renderer) {
 
     // Adjust Sky Settings
     const skyUniforms = sky.material.uniforms;
-    skyUniforms['turbidity'].value = 8;             // Softer haze
-    skyUniforms['rayleigh'].value = 1.2;            // Adjusted for more atmospheric blue
-    skyUniforms['mieCoefficient'].value = 0.005;    // Lower for less scattering
-    skyUniforms['mieDirectionalG'].value = 0.7;     // Directional lighting effect
+    skyUniforms['turbidity'].value = 8;
+    skyUniforms['rayleigh'].value = 1.2;
+    skyUniforms['mieCoefficient'].value = 0.005;
+    skyUniforms['mieDirectionalG'].value = 0.7;
 
     // Set Sun Position
-    const phi = THREE.MathUtils.degToRad(70);       // Lower sun angle for evening light
-    const theta = THREE.MathUtils.degToRad(180);    // Set sun position
+    const phi = THREE.MathUtils.degToRad(70);
+    const theta = THREE.MathUtils.degToRad(180);
     sun.setFromSphericalCoords(1, phi, theta);
     sky.material.uniforms['sunPosition'].value.copy(sun);
 
     // Add Ambient Light
-    const ambientLight = new THREE.AmbientLight(0xaaaaaa, 0.7); // Increased intensity
+    const ambientLight = new THREE.AmbientLight(0xaaaaaa, 0.7);
     scene.add(ambientLight);
 
     // Add a Directional Light to Simulate Sunlight
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2); // Brighter directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
     directionalLight.position.set(sun.x, sun.y, sun.z).normalize();
-    directionalLight.castShadow = true; // Enable shadows
-    directionalLight.shadow.mapSize.width = 2048; // Higher resolution for softer shadows
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.camera.near = 0.1;
     directionalLight.shadow.camera.far = 500;
