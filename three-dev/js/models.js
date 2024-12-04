@@ -1,89 +1,38 @@
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import * as THREE from 'three';
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export function loadModels(scene, group, teleportgroup) {
     const loader = new GLTFLoader();
 
-    // Load Farm Model
-    loader.load(
-        'assets/models/farm.glb',
-        (gltf) => {
-            console.log('Farm model loaded:', gltf);
-            const farm = gltf.scene;
+    // Helper function to load models
+    function loadModel(path, scale, position, addToTeleportGroup = false) {
+        loader.load(
+            path,
+            (gltf) => {
+                const model = gltf.scene;
+                model.scale.set(...scale);
+                model.position.set(...position);
 
-            if (!farm) {
-                console.error('Farm model is undefined. Ensure the file path is correct.');
-                return;
-            }
+                // Enable shadows for model
+                model.castShadow = true;
+                model.receiveShadow = true;
 
-            try {
-                farm.scale.set(1, 1, 1);
-                farm.position.set(0, 0, 0);
+                // Add to appropriate groups
+                if (addToTeleportGroup) teleportgroup.add(model);
+                group.add(model);
+            },
+            undefined,
+            (error) => console.error(`Error loading model (${path}):`, error),
+        );
+    }
 
-                // Safely traverse the farm model
-                farm.traverse((child) => {
-                    if (child && child.isObject3D) {
-                        console.log('Farm child:', child);
-
-                        if (child.isMesh) {
-                            child.castShadow = true; // Enable shadow casting
-                            child.receiveShadow = true; // Enable shadow receiving
-                        }
-                    } else {
-                        console.warn('Skipping invalid child during farm traversal:', child);
-                    }
-                });
-
-                // Add the farm to the scene (but not the teleportgroup)
-                group.add(farm);
-                console.log('Farm model added to the scene.');
-            } catch (error) {
-                console.error('Error while traversing the farm model:', error);
-            }
-        },
-        undefined,
-        (error) => {
-            console.error('Error loading farm model:', error);
-        }
-    );
-
-    // Load other models (cat, barrel, shoe)...
-    loader.load(
-        'assets/models/catT.glb',
-        (gltf) => {
-            const cat = gltf.scene;
-            cat.scale.set(0.3, 0.3, 0.3);
-            cat.position.set(-24, 0.5, 4);
-            teleportgroup.add(cat); // Add to teleportgroup
-            group.add(cat);
-        },
-        undefined,
-        (error) => console.error('Error loading cat model:', error)
-    );
-
-    loader.load(
-        'assets/models/tynnyri.glb',
-        (gltf) => {
-            const barrel = gltf.scene;
-            barrel.scale.set(1, 1, 1);
-            barrel.position.set(-10, 0.5, -1);
-            teleportgroup.add(barrel); // Add to teleportgroup
-            group.add(barrel);
-        },
-        undefined,
-        (error) => console.error('Error loading barrel model:', error)
-    );
-
-    loader.load(
-        'assets/models/shoe.glb',
-        (gltf) => {
-            const shoe = gltf.scene;
-            shoe.scale.set(0.75, 0.75, 0.75);
-            shoe.position.set(-10, 0.8, -1);
-            teleportgroup.add(shoe); // Add to teleportgroup
-            group.add(shoe);
-        },
-        undefined,
-        (error) => console.error('Error loading shoe model:', error)
+    // Load individual models
+    loadModel("assets/models/farm.glb", [1, 1, 1], [0, 0, 0], true);
+    loadModel("assets/models/catT.glb", [0.3, 0.3, 0.3], [-24, 0.5, 4], false);
+    loadModel("assets/models/tynnyri.glb", [1, 1, 1], [-10, 0.5, -1], false);
+    loadModel(
+        "assets/models/shoe.glb",
+        [0.75, 0.75, 0.75],
+        [-10, 0.8, -1],
+        false,
     );
 }
