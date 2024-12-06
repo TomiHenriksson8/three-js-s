@@ -107,6 +107,9 @@ function initVR() {
   loader.load("assets/models/ctrl.glb", function(gltf) {
     const controllerModel = gltf.scene;
     controllerModel.scale.set(0.002, 0.002, 0.002);
+    controllerModel.rotation.z = Math.PI;
+
+    controllerModel.rotation.x += THREE.MathUtils.degToRad(180);
     controller1.add(controllerModel);
   });
 
@@ -127,6 +130,9 @@ function initVR() {
   loader.load("assets/models/ctrl.glb", function(gltf) {
     const controllerModel = gltf.scene;
     controllerModel.scale.set(0.002, 0.002, 0.002);
+    controllerModel.rotation.z = Math.PI;
+
+    controllerModel.rotation.x += THREE.MathUtils.degToRad(180);
     controller2.add(controllerModel);
   });
 
