@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { VRButton } from "three/addons/webxr/VRButton.js";
-import { XRControllerModelFactory } from "three/addons/webxr/XRControllerModelFactory.js";
 import { invisiblePlanetoTestTeleportL, loadModels } from "./models.js";
 import { setupEnvironment } from "./environment.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 let camera, scene, renderer;
 let controller1, controller2, controllerGrip1, controllerGrip2;
@@ -94,7 +94,7 @@ function visualizeRayCaster() {
 }
 
 function initVR() {
-  const loader = new XRControllerModelFactory();
+  const loader = new GLTFLoader();
 
   // Initialize Controller 1
   controller1 = renderer.xr.getController(0);
@@ -104,11 +104,16 @@ function initVR() {
   controller1.addEventListener("selectstart", onSelectStart);
   controller1.addEventListener("selectend", onSelectEnd);
 
+  loader.load("assets/models/ctrl.glb", function(gltf) {
+    const controllerModel = gltf.scene;
+    controllerModel.scale.set(0.002, 0.002, 0.002);
+    controller1.add(controllerModel);
+  });
+
   scene.add(controller1);
 
   // Add Controller Grip 1
   controllerGrip1 = renderer.xr.getControllerGrip(0);
-  controllerGrip1.add(loader.createControllerModel(controllerGrip1));
   scene.add(controllerGrip1);
 
   // Initialize Controller 2
@@ -118,11 +123,17 @@ function initVR() {
 
   controller2.addEventListener("selectstart", onSelectStart);
   controller2.addEventListener("selectend", onSelectEnd);
+
+  loader.load("assets/models/ctrl.glb", function(gltf) {
+    const controllerModel = gltf.scene;
+    controllerModel.scale.set(0.002, 0.002, 0.002);
+    controller2.add(controllerModel);
+  });
+
   scene.add(controller2);
 
   // Add Controller Grip 2
   controllerGrip2 = renderer.xr.getControllerGrip(1);
-  controllerGrip2.add(loader.createControllerModel(controllerGrip2));
   scene.add(controllerGrip2);
 }
 
